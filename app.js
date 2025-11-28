@@ -314,7 +314,7 @@ function wire() {
   }
 
   resetPassBtn.addEventListener('click', async () => {
-    if (!confirm('Resetar senha para admin123?')) return;
+    if (!confirm('Resetar senha para padrão?')) return;
     await setAdminPass('admin123');
   });
   clearAllBtn.addEventListener('click', () => {
