@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Futebol de Hoje</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icons/icon-192.png">
+  <meta name="theme-color" content="#0b1220"/>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>Futebol de Hoje</h1>
+    <div class="actions">
+      <button id="installBtn" class="btn small">Instalar</button>
+      <button id="syncBtn" class="btn small">Backup</button>
+      <button id="adminBtn" class="btn small">Admin</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="add-match card">
+      <h2>Adicionar partida</h2>
+      <form id="matchForm" autocomplete="off">
+        <div class="row">
+          <input id="time" placeholder="Horário (ex: 20:30)" pattern="^([01]?\d|2[0-3])[:hH]?([0-5]\d)$">
+          <input id="team1" placeholder="Time mandante" required>
+        </div>
+        <div class="row">
+          <input id="team2" placeholder="Time visitante" required>
+          <input id="link" placeholder="Link (opcional)" type="url">
+        </div>
+        <div class="row">
+          <textarea id="note" placeholder="Observação (opcional)"></textarea>
+        </div>
+        <div class="row right">
+          <button type="submit" class="btn">Salvar</button>
+          <button type="button" id="clearBtn" class="btn ghost">Limpar tudo</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="list card">
+      <h2>Jogos de hoje <span id="count">(0)</span></h2>
+      <div id="matches"></div>
+      <p id="empty" class="muted">Nenhuma partida. Adicione acima.</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <small>Offline-ready PWA • Salvo localmente no seu navegador</small>
+  </footer>
+
+  <!-- Admin modal -->
+  <div id="adminModal" class="modal" aria-hidden="true">
+    <div class="modal-content card">
+      <h3>Painel Admin</h3>
+      <div id="adminArea">
+        <label>Senha Admin: <input id="adminPass" type="password" placeholder="Senha"></label>
+        <div class="row">
+          <button id="adminLoginBtn" class="btn">Entrar</button>
+          <button id="adminCloseBtn" class="btn ghost">Fechar</button>
+        </div>
+        <div id="adminControls" style="display:none;margin-top:12px">
+          <p class="muted">Opções de administração</p>
+          <div class="row">
+            <button id="exportBtn" class="btn">Exportar JSON</button>
+            <button id="importBtn" class="btn ghost">Importar JSON</button>
+            <input id="importFile" type="file" accept=".json" style="display:none">
+          </div>
+          <div class="row">
+            <button id="resetPassBtn" class="btn danger">Resetar senha</button>
+            <button id="clearAllBtn" class="btn danger">Apagar todos</button>
+          </div>
+          <p class="muted" style="margin-top:8px">Dica: a senha padrão é <strong>admin123</strong>. Altere após entrar.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <template id="matchTpl">
+    <div class="match">
+      <div class="left">
+        <div class="teams"><span class="team1"></span> <span class="vx">x</span> <span class="team2"></span></div>
+        <div class="meta"><span class="time"></span> • <a class="link" target="_blank" rel="noopener">Abrir</a></div>
+        <div class="note muted"></div>
+      </div>
+      <div class="right">
+        <button class="btn tiny edit">Editar</button>
+        <button class="btn tiny danger delete">Excluir</button>
+      </div>
+    </div>
+  </template>
+
+  <script src="/app.js"></script>
+  <script>
+    // registra o service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js').then(()=> {
+        console.log('Service worker registrado');
+      }).catch(err => console.warn('SW erro:', err));
+    }
+  </script>
+</body>
+</html>

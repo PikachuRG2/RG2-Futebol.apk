@@ -1,0 +1,47 @@
+/* Styles for Futebol de Hoje PWA */
+:root{
+  --bg:#0b1220;
+  --card:#07111a;
+  --accent:#ffd100;
+  --muted:#9db0c8;
+  --btn:#1f8feb;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+  background:linear-gradient(180deg,#051019 0%,var(--bg) 100%);color:#e6eef8;
+  -webkit-font-smoothing:antialiased;padding-bottom:60px;
+}
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:linear-gradient(90deg, rgba(255,255,255,0.02), transparent);
+  border-bottom:1px solid rgba(255,255,255,0.03);
+}
+.topbar h1{margin:0;font-size:18px;color:var(--accent)}
+.container{max-width:980px;margin:18px auto;padding:12px}
+.card{background:var(--card);padding:12px;border-radius:10px;margin-bottom:12px;box-shadow:0 3px 10px rgba(0,0,0,0.4)}
+.add-match h2,.list h2{margin:0 0 10px 0;font-size:16px}
+.row{display:flex;gap:8px;margin-bottom:8px}
+.row.right{justify-content:flex-end}
+input,textarea{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px;border-radius:8px;color:inherit;flex:1}
+textarea{min-height:48px;resize:vertical}
+.btn{background:var(--btn);border:none;padding:8px 12px;border-radius:8px;color:#fff;cursor:pointer}
+.btn.small{padding:6px 8px;font-size:13px}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+.btn.tiny{padding:6px 8px;font-size:12px;margin-left:6px}
+.btn.danger{background:#c23a3a}
+.actions{display:flex;gap:8px;align-items:center}
+.list #matches{display:flex;flex-direction:column;gap:8px}
+.match{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;background:linear-gradient(90deg, rgba(255,255,255,0.01), transparent)}
+.match .teams{font-weight:700}
+.match .meta{font-size:13px;color:var(--muted);margin-top:6px}
+.match .link{color:var(--btn);text-decoration:none}
+.muted{color:var(--muted);font-size:13px}
+.footer{position:fixed;left:0;right:0;bottom:0;padding:10px 14px;text-align:center;background:linear-gradient(180deg, transparent, rgba(0,0,0,0.2))}
+.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,12,0.5);padding:12px}
+.modal[aria-hidden="true"]{display:none}
+.modal-content{width:100%;max-width:520px}
+@media(max-width:720px){
+  .row{flex-direction:column}
+  .topbar h1{font-size:16px}
+}
