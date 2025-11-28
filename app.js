@@ -121,26 +121,57 @@ function importJSON(file) {
   reader.readAsText(file);
 }
 
-// admin simple (senha local)
-function adminInit() {
-  // store hashed password in localStorage (simple)
+function genSalt() {
+  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+}
+
+function toHex(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let hex = '';
+  for (let i = 0; i < bytes.length; i++) {
+    const h = bytes[i].toString(16).padStart(2, '0');
+    hex += h;
+  }
+  return hex;
+}
+
+async function hashPass(pass, salt) {
+  const enc = new TextEncoder().encode(pass + salt);
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return toHex(buf);
+}
+
+async function adminInit() {
   let admin = JSON.parse(localStorage.getItem(ADMIN_KEY) || 'null');
   if (!admin) {
-    admin = { hash: btoa('admin123') }; // default senha admin123 (base64)
+    const salt = genSalt();
+    const hash = await hashPass('admin123', salt);
+    admin = { salt, hash };
     localStorage.setItem(ADMIN_KEY, JSON.stringify(admin));
   }
   return admin;
 }
 
-function checkAdminPass(input) {
+async function checkAdminPass(input) {
   const admin = JSON.parse(localStorage.getItem(ADMIN_KEY) || 'null');
   if (!admin) return false;
-  return btoa(input) === admin.hash;
+  if (admin.salt && admin.hash) {
+    const h = await hashPass(input, admin.salt);
+    return h === admin.hash;
+  }
+  const ok = btoa(input) === admin.hash;
+  if (ok) {
+    const salt = genSalt();
+    const hash = await hashPass(input, salt);
+    localStorage.setItem(ADMIN_KEY, JSON.stringify({ salt, hash }));
+  }
+  return ok;
 }
 
-function setAdminPass(newPass) {
-  const admin = { hash: btoa(newPass) };
-  localStorage.setItem(ADMIN_KEY, JSON.stringify(admin));
+async function setAdminPass(newPass) {
+  const salt = genSalt();
+  const hash = await hashPass(newPass, salt);
+  localStorage.setItem(ADMIN_KEY, JSON.stringify({ salt, hash }));
   alert('Senha atualizada.');
 }
 
@@ -184,9 +215,10 @@ function wire() {
     adminModal.setAttribute('aria-hidden', 'true');
   });
 
-  adminLoginBtn.addEventListener('click', () => {
+  adminLoginBtn.addEventListener('click', async () => {
     const val = adminPass.value || '';
-    if (checkAdminPass(val)) {
+    const ok = await checkAdminPass(val);
+    if (ok) {
       adminControls.style.display = 'block';
       adminPass.value = '';
       alert('Acesso concedido.');
@@ -202,9 +234,9 @@ function wire() {
     if (f) importJSON(f);
   });
 
-  resetPassBtn.addEventListener('click', () => {
+  resetPassBtn.addEventListener('click', async () => {
     if (!confirm('Resetar senha para admin123?')) return;
-    setAdminPass('admin123');
+    await setAdminPass('admin123');
   });
   clearAllBtn.addEventListener('click', () => {
     if (!confirm('Apagar todas as partidas permanentemente?')) return;
@@ -233,8 +265,8 @@ function wire() {
   el('syncBtn').addEventListener('click', exportJSON);
 }
 
-window.addEventListener('load', () => {
-  adminInit();
+window.addEventListener('load', async () => {
+  await adminInit();
   wire();
   load();
 });
