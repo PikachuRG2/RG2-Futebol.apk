@@ -137,21 +137,58 @@ async function syncFromSource() {
     const res = await fetch(url, { cache: 'no-store' });
     const ct = res.headers.get('content-type') || '';
     const data = ct.includes('application/json') ? await res.json() : await res.text();
-    if (!Array.isArray(data)) throw new Error('Fonte não retorna lista JSON');
-    const arr = data.map(d => ({
-      id: uid(),
-      time: d.time || '',
-      team1: d.team1 || '',
-      team2: d.team2 || '',
-      link: d.link || '',
-      note: d.note || ''
-    })).filter(x => x.team1 && x.team2);
+    let arr;
+    if (Array.isArray(data)) {
+      arr = data.map(d => ({
+        id: uid(),
+        time: d.time || '',
+        team1: d.team1 || '',
+        team2: d.team2 || '',
+        link: d.link || '',
+        note: d.note || ''
+      })).filter(x => x.team1 && x.team2);
+    } else if (typeof data === 'string') {
+      arr = parseSportsOnlineProg(data);
+    } else {
+      throw new Error('Formato de fonte inválido');
+    }
     matches = arr.concat(matches);
     save();
     alert('Sincronização concluída.');
   } catch(e) {
     alert('Erro ao buscar da fonte. Verifique CORS ou URL.');
   }
+}
+
+function weekdayNameUpper(d) {
+  return d.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
+}
+
+function parseSportsOnlineProg(text) {
+  const lines = text.split(/\r?\n/);
+  const todayName = weekdayNameUpper(new Date());
+  let inDay = false;
+  const out = [];
+  for (let raw of lines) {
+    const line = raw.trim();
+    if (!line) continue;
+    const dm = line.match(/^(SUNDAY|MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY|SATURDAY)\s*$/i);
+    if (dm) {
+      inDay = dm[1].toUpperCase() === todayName;
+      continue;
+    }
+    if (!inDay) continue;
+    if (!/^\d{2}:\d{2}/.test(line)) continue;
+    if (/^(F1:|NFL:)/i.test(line)) continue;
+    const m = line.match(/^(\d{2}:\d{2})\s+(.*?)\s+x\s+(.*?)\s*\|\s*(https?:\/\/\S+)/i);
+    if (!m) continue;
+    const time = m[1];
+    const team1 = m[2].trim();
+    const team2 = m[3].trim();
+    const link = m[4].trim();
+    out.push({ id: uid(), time, team1, team2, link, note: '' });
+  }
+  return out;
 }
 
 function genSalt() {
