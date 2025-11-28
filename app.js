@@ -1,6 +1,7 @@
 // PWA Futebol de Hoje - app.js (com painel admin e export/import)
 const STORAGE_KEY = 'futebol_hoje_matches_v1';
 const ADMIN_KEY = 'futebol_hoje_admin_v1';
+const SOURCE_KEY = 'futebol_hoje_source_v1';
 
 const el = id => document.getElementById(id);
 const q = sel => document.querySelector(sel);
@@ -121,6 +122,38 @@ function importJSON(file) {
   reader.readAsText(file);
 }
 
+function getSourceUrl() {
+  return localStorage.getItem(SOURCE_KEY) || '';
+}
+
+function setSourceUrl(url) {
+  localStorage.setItem(SOURCE_KEY, url);
+}
+
+async function syncFromSource() {
+  const url = getSourceUrl().trim();
+  if (!url) { alert('Defina a URL da fonte no painel admin.'); return; }
+  try {
+    const res = await fetch(url, { cache: 'no-store' });
+    const ct = res.headers.get('content-type') || '';
+    const data = ct.includes('application/json') ? await res.json() : await res.text();
+    if (!Array.isArray(data)) throw new Error('Fonte não retorna lista JSON');
+    const arr = data.map(d => ({
+      id: uid(),
+      time: d.time || '',
+      team1: d.team1 || '',
+      team2: d.team2 || '',
+      link: d.link || '',
+      note: d.note || ''
+    })).filter(x => x.team1 && x.team2);
+    matches = arr.concat(matches);
+    save();
+    alert('Sincronização concluída.');
+  } catch(e) {
+    alert('Erro ao buscar da fonte. Verifique CORS ou URL.');
+  }
+}
+
 function genSalt() {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);
 }
@@ -207,6 +240,8 @@ function wire() {
   const importFile = el('importFile');
   const resetPassBtn = el('resetPassBtn');
   const clearAllBtn = el('clearAllBtn');
+  const sourceInput = el('sourceUrl');
+  const syncFromSourceBtn = el('syncFromSourceBtn');
 
   adminBtn.addEventListener('click', () => {
     adminModal.setAttribute('aria-hidden', 'false');
@@ -233,6 +268,13 @@ function wire() {
     const f = e.target.files[0];
     if (f) importJSON(f);
   });
+  if (sourceInput) {
+    sourceInput.value = getSourceUrl();
+    sourceInput.addEventListener('change', () => setSourceUrl(sourceInput.value.trim()));
+  }
+  if (syncFromSourceBtn) {
+    syncFromSourceBtn.addEventListener('click', syncFromSource);
+  }
 
   resetPassBtn.addEventListener('click', async () => {
     if (!confirm('Resetar senha para admin123?')) return;
