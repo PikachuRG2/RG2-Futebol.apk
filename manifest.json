@@ -2,7 +2,7 @@
   "name": "Futebol de Hoje",
   "short_name": "Futebol",
   "description": "Lista de jogos do dia — offline, PWA, salvo localmente.",
-  "start_url": "/index.html",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#0b1220",
   "theme_color": "#0b1220",

@@ -342,10 +342,31 @@ function wire() {
 
   // Backup quick download
   el('syncBtn').addEventListener('click', exportJSON);
+  const refreshBtn = el('refreshBtn');
+  if (refreshBtn) refreshBtn.addEventListener('click', syncFromSource);
+}
+
+function dedup(list) {
+  const seen = new Set();
+  const out = [];
+  for (const m of list) {
+    const key = `${(m.time||'').trim()}|${(m.team1||'').trim()}|${(m.team2||'').trim()}|${(m.link||'').trim()}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(m);
+  }
+  return out;
 }
 
 window.addEventListener('load', async () => {
   await adminInit();
   wire();
   load();
+  const url = getSourceUrl();
+  if (url) {
+    const before = matches.slice();
+    await syncFromSource();
+    matches = dedup(matches);
+    if (matches.length !== before.length) save();
+  }
 });

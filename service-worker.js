@@ -1,13 +1,12 @@
-const CACHE_NAME = 'futebol-cores-v1';
-const OFFLINE_URL = '/index.html';
+const CACHE_NAME = 'futebol-cores-v2';
+const OFFLINE_URL = 'index.html';
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/styles.css',
-  '/app.js',
-  '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png'
+  'index.html',
+  'styles.css',
+  'app.js',
+  'manifest.json',
+  'icons/icon-192.png',
+  'icons/icon-512.png'
 ];
 
 self.addEventListener('install', event => {

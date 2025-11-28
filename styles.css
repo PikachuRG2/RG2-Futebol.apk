@@ -32,9 +32,10 @@ textarea{min-height:48px;resize:vertical}
 .btn.danger{background:#c23a3a}
 .actions{display:flex;gap:8px;align-items:center}
 .list #matches{display:flex;flex-direction:column;gap:8px}
-.match{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;background:linear-gradient(90deg, rgba(255,255,255,0.01), transparent)}
+.match{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:12px;background:linear-gradient(90deg, rgba(255,255,255,0.04), transparent)}
 .match .teams{font-weight:700}
-.match .meta{font-size:13px;color:var(--muted);margin-top:6px}
+.match .meta{font-size:13px;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:10px}
+.match .time{display:inline-block;background:rgba(255,255,255,0.06);padding:4px 8px;border-radius:8px;color:#e6eef8;font-weight:600}
 .match .link{color:var(--btn);text-decoration:none}
 .muted{color:var(--muted);font-size:13px}
 .footer{position:fixed;left:0;right:0;bottom:0;padding:10px 14px;text-align:center;background:linear-gradient(180deg, transparent, rgba(0,0,0,0.2))}

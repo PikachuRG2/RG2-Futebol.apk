@@ -4,10 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Futebol de Hoje</title>
-  <link rel="manifest" href="/manifest.json">
-  <link rel="icon" href="/icons/icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png">
   <meta name="theme-color" content="#0b1220"/>
-  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="topbar">
@@ -15,6 +15,7 @@
     <div class="actions">
       <button id="installBtn" class="btn small">Instalar</button>
       <button id="syncBtn" class="btn small">Backup</button>
+      <button id="refreshBtn" class="btn small">Atualizar</button>
       <button id="adminBtn" class="btn small">Admin</button>
     </div>
   </header>
@@ -97,11 +98,11 @@
     </div>
   </template>
 
-  <script src="/app.js"></script>
+  <script src="app.js"></script>
   <script>
     // registra o service worker
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js').then(()=> {
+      navigator.serviceWorker.register('service-worker.js').then(()=> {
         console.log('Service worker registrado');
       }).catch(err => console.warn('SW erro:', err));
     }
